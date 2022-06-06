@@ -15,6 +15,7 @@
    [app.main.refs :as refs]
    [app.main.store :as st]
    [app.main.ui.components.shape-icon :as si]
+   [app.main.ui.context :as ctx]
    [app.main.ui.hooks :as hooks]
    [app.main.ui.icons :as i]
    [app.util.dom :as dom]
@@ -90,7 +91,7 @@
        (l/derived refs/workspace-local)))
 
 (mf/defc layer-item
-  [{:keys [index item selected objects] :as props}]
+  [{:keys [index page item selected objects] :as props}]
   (let [id         (:id item)
         selected?  (contains? selected id)
         container? (or (cph/frame-shape? item)
@@ -98,6 +99,12 @@
 
         disable-drag      (mf/use-state false)
         scroll-to-middle? (mf/use-var true)
+
+        libraries      (mf/use-ctx ctx/libraries)
+        component      (when (and (:component-id item) (:component-file item))
+                         (cph/get-component libraries (:component-file item) (:component-id item)))
+        main-instance? (when component
+                         (cph/is-main-instance? (:id item) (:id page) component))
 
         expanded-iref (mf/use-memo
                        (mf/deps id)
@@ -218,7 +225,8 @@
                                                      :icon-layer (= (:type item) :icon))
                               :on-click select-shape
                               :on-double-click #(dom/stop-propagation %)}
-      [:& si/element-icon {:shape item}]
+      [:& si/element-icon {:shape item
+                           :main-instance? main-instance?}]
       [:& layer-name {:shape item
                       :name-ref ref
                       :on-start-edit #(reset! disable-drag true)
@@ -242,7 +250,8 @@
         (for [[index id] (reverse (d/enumerate (:shapes item)))]
           (when-let [item (get objects id)]
             [:& layer-item
-             {:item item
+             {:page page
+              :item item
               :selected selected
               :index index
               :objects objects
@@ -263,8 +272,9 @@
   {::mf/wrap [#(mf/memo % =)
               #(mf/throttle % 200)]}
   [{:keys [objects] :as props}]
-  (let [selected (mf/deref refs/selected-shapes)
-        selected (hooks/use-equal-memo selected)
+  (let [page       (mf/deref refs/workspace-page)
+        selected   (mf/deref refs/selected-shapes)
+        selected   (hooks/use-equal-memo selected)
         root (get objects uuid/zero)]
     [:ul.element-list
      [:& hooks/sortable-container {}
@@ -278,7 +288,8 @@
               :objects objects
               :key id}]
             [:& layer-item
-             {:item obj
+             {:page page
+              :item obj
               :selected selected
               :index index
               :objects objects
@@ -288,14 +299,16 @@
   {::mf/wrap [#(mf/memo % =)
               #(mf/throttle % 200)]}
   [{:keys [objects] :as props}]
-  (let [selected (mf/deref refs/selected-shapes)
+  (let [page       (mf/deref refs/workspace-page)
+        selected (mf/deref refs/selected-shapes)
         selected (hooks/use-equal-memo selected)
         root (get objects uuid/zero)]
     [:ul.element-list
      (for [[index id] (d/enumerate (:shapes root))]
        (when-let [obj (get objects id)]
          [:& layer-item
-          {:item obj
+          {:page page
+           :item obj
            :selected selected
            :index index
            :objects objects
@@ -418,7 +431,6 @@
                    (take (:num-items @filter-state))
                    filtered-objects-total))))
 
-
         handle-show-more
         (fn []
           (when (<= (:num-items @filter-state) (count filtered-objects-total))
@@ -426,7 +438,7 @@
 
     [filtered-objects
      handle-show-more
-     
+
      (mf/html
       (if (:show-search-box @filter-state)
         [:*
@@ -487,7 +499,7 @@
         (fn [entries]
           (when (and (.-isIntersecting (first entries)) (some? show-more))
             (show-more)))
-        
+
         on-render-container
         (fn [element]
           (let [options #js {:root element}
@@ -515,7 +527,6 @@
 
             (when last-hidden-frame
               (dom/add-class! last-hidden-frame "sticky"))))]
-
 
     [:div#layers.tool-window
      (if (d/not-empty? focus)
