@@ -9,7 +9,6 @@
    [app.common.data :as d]
    [app.common.geom.proportions :as gpr]
    [app.common.logging :as log]
-   [app.common.pages :as cp]
    [app.common.pages.changes-builder :as pcb]
    [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
@@ -246,8 +245,8 @@
 (defn make-new-shape
   [attrs objects selected]
   (let [default-attrs (if (= :frame (:type attrs))
-                        cp/default-frame-attrs
-                        cp/default-shape-attrs)
+                        cts/default-frame-attrs
+                        cts/default-shape-attrs)
 
         selected-non-frames
         (into #{} (comp (map (d/getf objects))
@@ -486,9 +485,9 @@
             page-id (:current-page-id state)
             frame-id (-> (wsh/lookup-page-objects state page-id)
                          (ctt/frame-id-by-position {:x frame-x :y frame-y}))
-            shape (-> (cp/make-minimal-shape type)
+            shape (-> (cts/make-minimal-shape type)
                       (merge data)
                       (merge {:x x :y y})
                       (assoc :frame-id frame-id)
-                      (cp/setup-rect-selrect))]
+                      (cts/setup-rect-selrect))]
         (rx/of (add-shape shape))))))
