@@ -8,8 +8,11 @@
   (:require
    [app.common.logging :as log]
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
    [app.common.pages :as cp]
+=======
+>>>>>>> 9d9c86296 (:tada: Scaffolding to write unit tests of common types)
    [app.common.pages.changes-builder :as pcb]
    [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
