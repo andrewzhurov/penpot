@@ -7,6 +7,18 @@
 (ns app.main.data.workspace.common
   (:require
    [app.common.logging :as log]
+<<<<<<< HEAD
+=======
+   [app.common.pages :as cp]
+   [app.common.pages.changes-builder :as pcb]
+   [app.common.pages.helpers :as cph]
+   [app.common.spec :as us]
+   [app.common.types.page :as ctp]
+   [app.common.types.shape :as cts]
+   [app.common.types.shape-tree :as ctt]
+   [app.common.types.shape.interactions :as ctsi]
+   [app.common.uuid :as uuid]
+>>>>>>> 8a822e1c1 (:recycle: Move component instantiation to new types module)
    [app.main.data.workspace.changes :as dch]
    [app.main.data.workspace.undo :as dwu]
    [app.main.worker :as uw]
@@ -39,6 +51,33 @@
         (->> (uw/ask! msg)
              (rx/map (constantly ::index-initialized)))))))
 
+<<<<<<< HEAD
+=======
+;; --- Shape attrs (Layers Sidebar)
+
+(defn toggle-collapse
+  [id]
+  (ptk/reify ::toggle-collapse
+    ptk/UpdateEvent
+    (update [_ state]
+      (update-in state [:workspace-local :expanded id] not))))
+
+(defn expand-collapse
+  [id]
+  (ptk/reify ::expand-collapse
+    ptk/UpdateEvent
+    (update [_ state]
+      (assoc-in state [:workspace-local :expanded id] true))))
+
+(defn collapse-all
+  []
+  (ptk/reify ::collapse-all
+    ptk/UpdateEvent
+    (update [_ state]
+      (update state :workspace-local dissoc :expanded))))
+
+
+>>>>>>> 8a822e1c1 (:recycle: Move component instantiation to new types module)
 ;; These functions should've been in `src/app/main/data/workspace/undo.cljs` but doing that causes
 ;; a circular dependency with `src/app/main/data/workspace/changes.cljs`
 (def undo

@@ -11,6 +11,7 @@
    [app.common.geom.shapes :as gsh]
    [app.common.math :as mth]
    [app.common.pages.helpers :as cph]
+   [app.common.types.shape-tree :as ctst]
    [app.common.uuid :as uuid]
    [app.main.data.workspace :as dw]
    [app.main.refs :as refs]
@@ -289,7 +290,7 @@
     (when (or (nil? frame)
               (and (is-guide-inside-frame? (assoc guide :position pos) frame)
                    (cph/root-frame? frame)
-                   (not (cph/rotated-frame? frame))))
+                   (not (ctst/rotated-frame? frame))))
       [:g.guide-area
        (when-not disabled-guides?
          (let [{:keys [x y width height]} (guide-area-axis pos vbox zoom frame axis)]
