@@ -50,7 +50,7 @@
           projects))
 
 (mf/defc file-menu
-  [{:keys [files show? on-edit on-menu-close top left navigate?] :as props}]
+  [{:keys [files show? on-edit on-menu-close top left navigate? origin] :as props}]
   (assert (seq files) "missing `files` prop")
   (assert (boolean? show?) "missing `show?` prop")
   (assert (fn? on-edit) "missing `on-edit` prop")
@@ -92,6 +92,12 @@
         on-delete
         (fn [event]
           (dom/stop-propagation event)
+
+          (prn "is shared?" (:is-shared file))
+          (when (:is-shared file)
+            (.log js/console (clj->js file))
+            (prn "debo preguntar si hay archivos que lo usen")
+            (prn "para saber que modal crear" origin))
           (if multi?
             (st/emit! (modal/show
                        {:type :confirm

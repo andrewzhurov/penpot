@@ -124,5 +124,6 @@
      [:& header {:team team :project project}]
      [:section.dashboard-container
       [:& grid {:project project
-                :files files}]]]))
+                :files files
+                :origin :files}]]]))
 
