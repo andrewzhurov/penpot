@@ -92,7 +92,7 @@
         on-delete
         (fn [event]
           (dom/stop-propagation event)
-
+          (st/emit! (dd/fetch-library-using-files file))
           (prn "is shared?" (:is-shared file))
           (when (:is-shared file)
             (.log js/console (clj->js file))

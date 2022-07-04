@@ -453,6 +453,21 @@
   (check-read-permissions! pool profile-id file-id)
   (retrieve-file-libraries cfg false file-id))
 
+
+;; --- Query: Files that use this File library
+
+(def ^:private sql:library-using-files
+  ;; SQL query
+  )
+
+(s/def ::library-using-files
+  (s/keys :req-un [::profile-id ::file-id]))
+
+(sv/defmethod ::library-using-files
+  [{:keys [pool] :as cfg} {:keys [profile-id file-id] :as params}]
+  (check-read-permissions! pool profile-id file-id)
+  (db/exec! pool [sql:library-using-files file-id]))
+
 ;; --- QUERY: team-recent-files
 
 (def sql:team-recent-files
