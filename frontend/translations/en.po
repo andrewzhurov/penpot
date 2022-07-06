@@ -1771,6 +1771,10 @@ msgstr ""
 msgid "modals.update-remote-component.message"
 msgstr "Update a component in a shared library"
 
+#: src/app/main/ui/delete_shared.cljs
+msgid "modals.delete-shared.title"
+msgstr "Deleting file"
+
 #: src/app/main/ui/dashboard/team.cljs
 msgid "notifications.invitation-email-sent"
 msgstr "Invitation sent successfully"

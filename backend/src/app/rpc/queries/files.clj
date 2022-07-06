@@ -457,8 +457,11 @@
 ;; --- Query: Files that use this File library
 
 (def ^:private sql:library-using-files
-  ;; SQL query
-  )
+  "SELECT f.id, 
+          f.name
+     FROM file_library_rel AS flr 
+     INNER JOIN file AS f ON f.id = flr.file_id
+    WHERE flr.library_file_id = ?;")
 
 (s/def ::library-using-files
   (s/keys :req-un [::profile-id ::file-id]))

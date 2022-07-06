@@ -17,6 +17,7 @@
    [app.main.store :as st]
    [app.main.ui :as ui]
    [app.main.ui.confirm]
+   [app.main.ui.delete-shared]
    [app.main.ui.modal :refer [modal]]
    [app.main.ui.routes :as rt]
    [app.main.worker :as worker]

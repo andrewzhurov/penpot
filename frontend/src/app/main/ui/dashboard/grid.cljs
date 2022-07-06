@@ -88,6 +88,7 @@
                                       :menu-pos nil
                                       :edition false})
         selected-files (mf/deref refs/dashboard-selected-files)
+        dashboard-local  (mf/deref refs/dashboard-local)
         item-ref       (mf/use-ref)
         menu-ref       (mf/use-ref)
         selected?      (contains? selected-files file-id)
@@ -213,7 +214,8 @@
                         :navigate? navigate?
                         :on-edit on-edit
                         :on-menu-close on-menu-close
-                        :origin origin}])]]]))
+                        :origin origin
+                        :dashboard-local dashboard-local}])]]]))
 
 (mf/defc grid
   [{:keys [files project origin] :as props}]

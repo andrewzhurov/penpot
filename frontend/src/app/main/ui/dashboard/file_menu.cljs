@@ -50,7 +50,7 @@
           projects))
 
 (mf/defc file-menu
-  [{:keys [files show? on-edit on-menu-close top left navigate? origin] :as props}]
+  [{:keys [files show? on-edit on-menu-close top left navigate? origin dashboard-local] :as props}]
   (assert (seq files) "missing `files` prop")
   (assert (boolean? show?) "missing `show?` prop")
   (assert (fn? on-edit) "missing `on-edit` prop")
@@ -93,24 +93,41 @@
         (fn [event]
           (dom/stop-propagation event)
           (st/emit! (dd/fetch-library-using-files file))
-          (prn "is shared?" (:is-shared file))
-          (when (:is-shared file)
-            (.log js/console (clj->js file))
-            (prn "debo preguntar si hay archivos que lo usen")
-            (prn "para saber que modal crear" origin))
-          (if multi?
-            (st/emit! (modal/show
-                       {:type :confirm
-                        :title (tr "modals.delete-file-multi-confirm.title" file-count)
-                        :message (tr "modals.delete-file-multi-confirm.message" file-count)
-                        :accept-label (tr "modals.delete-file-multi-confirm.accept" file-count)
-                        :on-accept delete-fn}))
-            (st/emit! (modal/show
-                       {:type :confirm
-                        :title (tr "modals.delete-file-confirm.title")
-                        :message (tr "modals.delete-file-confirm.message")
-                        :accept-label (tr "modals.delete-file-confirm.accept")
-                        :on-accept delete-fn}))))
+          (let [files->shared (:files-with-shared dashboard-local)
+                _ (prn "compartidos " files->shared)]
+            
+            (if (:is-shared file)
+              (if multi?
+                (st/emit! (modal/show
+                           {:type :delete-shared
+                            :title (tr "modals.delete-file-multi-confirm.title" file-count)
+                            :message (tr "modals.delete-file-multi-confirm.message" file-count)
+                            :accept-label (tr "modals.delete-file-multi-confirm.accept" file-count)
+                            :on-accept delete-fn}))
+                (st/emit! (modal/show
+                           {:type :delete-shared
+                            :title (tr "modals.delete-file-confirm.title")
+                            :message (tr "modals.delete-file-confirm.message")
+                            :accept-label (tr "modals.delete-file-confirm.accept")
+                            :on-accept delete-fn})))
+
+              (if multi?
+                (st/emit! (modal/show
+                           {:type :confirm
+                            :title (tr "modals.delete-file-multi-confirm.title" file-count)
+                            :message (tr "modals.delete-file-multi-confirm.message" file-count)
+                            :accept-label (tr "modals.delete-file-multi-confirm.accept" file-count)
+                            :on-accept delete-fn}))
+                (st/emit! (modal/show
+                           {:type :confirm
+                            :title (tr "modals.delete-file-confirm.title")
+                            :message (tr "modals.delete-file-confirm.message")
+                            :accept-label (tr "modals.delete-file-confirm.accept")
+                            :on-accept delete-fn}))))
+            
+
+)
+          )
 
         on-move-success
         (fn [team-id project-id]
@@ -155,7 +172,7 @@
           (dom/prevent-default event)
           (dom/stop-propagation event)
           (st/emit! (modal/show
-                     {:type :confirm
+                     {:type :delete-shared
                       :message ""
                       :title (tr "modals.remove-shared-confirm.message" (:name file))
                       :hint (tr "modals.remove-shared-confirm.hint")
