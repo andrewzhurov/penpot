@@ -21,31 +21,34 @@
 (mf/defc delete-shared-dialog
   {::mf/register modal/components
    ::mf/register-as :delete-shared}
-  [{:keys [message
-           scd-message
-           title
-           files
-           on-accept
+  [{:keys [on-accept
            on-cancel
-           hint
-           items
-           cancel-label
-           accept-label
-           accept-style] :as props}]
-  (let [locale       (mf/deref i18n/locale)
-
-        on-accept    (or on-accept identity)
+           accept-style
+           origin] :as props}]
+  (let [on-accept    (or on-accept identity)
         on-cancel    (or on-cancel identity)
-        message      (or message (t locale "ds.confirm-title"))
-        cancel-label (or cancel-label (tr "ds.confirm-cancel"))
-        accept-label (or accept-label (tr "ds.confirm-ok"))
+        cancel-label (tr "labels.cancel")
         accept-style (or accept-style :danger)
-        title        (or title (t locale "modals.delete-shared.title"))
+        is-delete? (= origin :delete)
         dashboard-local  (mf/deref refs/dashboard-local)
         files->shared (:files-with-shared dashboard-local)
-        files (keys files->shared)
-        _ (prn "en la modal" files->shared)
-        _ (prn files)
+        count-files (count (keys files->shared))
+        title (if is-delete?
+                (tr "modals.delete-shared-confirm.title")
+                (tr "modals.unpublish-shared-confirm.title"))
+        message (if is-delete?
+                  (tr "modals.delete-shared-confirm.message")
+                  (tr "modals.unpublish-shared-confirm.message"))
+
+        accept-label (if is-delete?
+                  (tr "modals.delete-shared-confirm.accept")
+                  (tr "modals.unpublish-shared-confirm.accept"))
+        scd-message (if is-delete?
+                      (tr "modals.delete-shared-confirm.scd-message" (i18n/c count-files))
+                      (tr "modals.unpublish-shared-confirm.scd-message" (i18n/c count-files)))
+        hint  (if is-delete?
+                ""
+                (tr "modals.unpublish-shared-confirm.hint" (i18n/c count-files)))
 
         accept-fn
         (mf/use-callback
@@ -69,44 +72,34 @@
                   (st/emit! (modal/hide))
                   (on-accept props)))]
         (->> (events/listen js/document EventType.KEYDOWN on-keydown)
-             (partial events/unlistenByKey))
-        (st/emit! (dd/clean-temp-shared))
-        ))
+             (partial events/unlistenByKey)))
+      #(st/emit! (dd/clean-temp-shared)))
 
     [:div.modal-overlay
      [:div.modal-container.confirm-dialog
       [:div.modal-header
        [:div.modal-header-title
-        [:h2 "la modal de pruebaaaa"]]
+        [:h2 title]]
        [:div.modal-close-button
         {:on-click cancel-fn} i/close]]
 
       [:div.modal-content
        (when (and (string? message) (not= message ""))
          [:h3 message])
-       (when (and (string? scd-message) (not= scd-message ""))
-         [:h3 scd-message])
-       (when (string? hint)
-         [:p hint])
-       (when (> (count items) 0)
-         [:*
-          [:p (tr "ds.component-subtitle")]
-          [:ul
-           (for [item items]
-             [:li.modal-item-element
-              [:span.modal-component-icon i/component]
-              [:span (:name item)]])]])]
 
-      (when (> (count files->shared) 0)
-        [:div
+       (when (> (count files->shared) 0)
          [:*
-          [:p "This files has a library that it's in use in these files"]
-          [:ul
-           (for [[_ file] files->shared]
-             [:li.modal-item-element
-              [:span (:name file)]])]]])
+          [:div
+           (when (and (string? scd-message) (not= scd-message ""))
+             [:h3 scd-message])
+           [:ul.file-list
+            (for [[id file] files->shared]
+              [:li.modal-item-element
+               {:key id}
+               [:span "- " (:name file)]])]]
+          (when (and (string? hint) (not= hint ""))
+            [:p hint])])]
 
-      [:p "When you delete it, the assets in it became a library of these files."]
       [:div.modal-footer
        [:div.action-buttons
         (when-not (= cancel-label :omit)

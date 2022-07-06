@@ -269,7 +269,6 @@
     ptk/WatchEvent
     (watch [_ _ _]
       (let [file-id (:id file)]
-        (prn "el shared en el fetch" file-id)
         (->> (rp/query :library-using-files {:file-id file-id})
              (rx/map library-using-files-fetched))))))
 
