@@ -144,14 +144,14 @@
         on-pointer-move   (actions/on-pointer-move viewport-ref zoom move-stream)
         on-pointer-up     (actions/on-pointer-up)
         on-move-selected  (actions/on-move-selected hover hover-ids selected space?)
-        on-menu-selected  (actions/on-menu-selected hover hover-ids selected)
+        on-menu-selected  (actions/on-menu-selected hover hover-ids selected) 
 
         on-frame-enter    (actions/on-frame-enter frame-hover)
         on-frame-leave    (actions/on-frame-leave frame-hover)
         on-frame-select   (actions/on-frame-select selected)
 
         disable-events?          (contains? layout :comments)
-        show-comments?           (= drawing-tool :comments)
+        show-comments?           true #_(= drawing-tool :comments)
         show-cursor-tooltip?     tooltip
         show-draw-area?          drawing-obj
         show-gradient-handlers?  (= (count selected) 1)

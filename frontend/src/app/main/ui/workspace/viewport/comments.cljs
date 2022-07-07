@@ -28,12 +28,6 @@
                          (filter #(= (:page-id %) page-id))
                          (dcm/apply-filters local profile))
 
-        on-bubble-click
-        (fn [{:keys [id] :as thread}]
-          (if (= (:open local) id)
-            (st/emit! (dcm/close-thread))
-            (st/emit! (dcm/open-thread thread))))
-
         on-draft-cancel
         (mf/use-callback
          #(st/emit! :interrupt))
@@ -58,7 +52,6 @@
        (for [item threads]
          [:& cmt/thread-bubble {:thread item
                                 :zoom zoom
-                                :on-click on-bubble-click
                                 :open? (= (:id item) (:open local))
                                 :key (:seqn item)}])
 
@@ -73,5 +66,3 @@
                                :on-cancel on-draft-cancel
                                :on-submit on-draft-submit
                                :zoom zoom}])]]]))
-
-

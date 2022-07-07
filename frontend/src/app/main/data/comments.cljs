@@ -8,7 +8,10 @@
   (:require
    [app.common.data :as d]
    [app.common.geom.point :as gpt]
+   [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
+   [app.common.uuid :as uuid]
+   [app.main.data.workspace.state-helpers :as wsh]
    [app.main.repo :as rp]
    [beicon.core :as rx]
    [cljs.spec.alpha :as s]
@@ -77,7 +80,10 @@
       ptk/WatchEvent
       (watch [_ state _]
          (let [share-id (-> state :viewer-local :share-id)
-               params (assoc params :share-id share-id)]
+               page-id (:current-page-id state)
+               objects (wsh/lookup-page-objects state page-id)
+               frame-id (cph/frame-id-by-position objects (:position params))
+               params (assoc params :share-id share-id :frame-id frame-id)]
            (->> (rp/mutation :create-comment-thread params)
                 (rx/mapcat #(rp/query :comment-thread {:file-id (:file-id %) :id (:id %) :share-id share-id}))
                 (rx/map #(partial created %))
@@ -338,3 +344,43 @@
 
       (= :yours mode)
       (filter #(contains? (:participants %) (:id profile))))))
+
+(defn update-comment-thread-frame
+    ([thread ]
+   (update-comment-thread-frame thread uuid/zero))
+
+   ([thread frame-id]
+    (us/assert ::comment-thread thread)
+    (ptk/reify ::update-comment-thread-frame
+      ptk/UpdateEvent
+      (update [_ state]
+        (let [thread-id (:id thread)]
+          (assoc-in state [:comment-threads thread-id :frame-id] frame-id)))
+
+      ptk/WatchEvent
+      (watch [_ _ _]
+        (let [thread-id (:id thread)]
+          (->> (rp/mutation :update-comment-thread-frame {:id thread-id  :frame-id frame-id})
+               (rx/catch #(rx/throw {:type :update-comment-thread-frame}))
+               (rx/ignore)))))))
+
+(defn detach-comment-thread
+  "Detach comment threads that are inside a frame when that frame is deleted"
+  [ids]
+  (us/verify (s/coll-of uuid?) ids)
+
+  (ptk/reify ::detach-comment-thread
+    ptk/WatchEvent
+    (watch [_ state _]
+      (let [objects (wsh/lookup-page-objects state)
+            is-frame? (fn [id] (= :frame (get-in objects [id :type])))
+            frame-ids? (into #{} (filter is-frame?) ids)
+            detach-comment (fn [comment-threads]
+                             (update-comment-thread-frame comment-threads))]
+
+        (->> state
+             :comment-threads
+             (vals)
+             (filter (fn [comment] (some #(= % (:frame-id comment)) frame-ids?)))
+             (map detach-comment)
+             (rx/from))))))

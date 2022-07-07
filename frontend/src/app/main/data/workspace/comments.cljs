@@ -6,13 +6,21 @@
 
 (ns app.main.data.workspace.comments
   (:require
+   [app.common.geom.point :as gpt]
+   [app.common.geom.shapes :as gsh]
+   [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
    [app.main.data.comments :as dcm]
-   [app.main.data.workspace :as dw]
-   [app.main.data.workspace.common :as dwc]
+  ;;  [app.main.data.workspace :as dw]
+   [app.main.data.workspace.common :as dwco]
+   [app.main.data.workspace.drawing :as dwd]
+   [app.main.data.workspace.state-helpers :as wsh]
+   [app.main.data.workspace.viewport :as dwv]
+   [app.main.repo :as rp]
    [app.main.streams :as ms]
    [app.util.router :as rt]
    [beicon.core :as rx]
+   [cljs.spec.alpha :as s]
    [potok.core :as ptk]))
 
 (declare handle-interrupt)
@@ -33,7 +41,7 @@
               (rx/map handle-comment-layer-click)
               (rx/take-until stoper))
          (->> stream
-              (rx/filter dwc/interrupt?)
+              (rx/filter dwco/interrupt?)
               (rx/map handle-interrupt)
               (rx/take-until stoper)))))))
 
@@ -95,8 +103,72 @@
         (rx/merge
          (rx/of (rt/nav :workspace pparams qparams))
          (->> stream
-              (rx/filter (ptk/type? ::dw/initialize-viewport))
+              (rx/filter (ptk/type? ::dwv/initialize-viewport))
               (rx/take 1)
               (rx/mapcat #(rx/of (center-to-comment-thread thread)
-                                 (dw/select-for-drawing :comments)
+                                 (dwd/select-for-drawing :comments)
                                  (dcm/open-thread thread)))))))))
+
+(defn update-comment-thread-position
+  ([thread  [new-x new-y]]
+   (update-comment-thread-position thread  [new-x new-y] nil))
+
+  ([thread  [new-x new-y] frame-id]
+  (us/assert ::dcm/comment-thread thread)
+  (ptk/reify ::update-comment-thread-position
+    ptk/UpdateEvent
+    (update [_ state]
+      (let [thread-id (:id thread)
+            page-id (:current-page-id state)
+            objects (wsh/lookup-page-objects state page-id)
+            new-frame-id (if (nil? frame-id)
+                             (cph/frame-id-by-position objects {:x new-x :y new-y})
+                             (:frame-id thread))]
+        (-> state
+            (assoc-in [:comment-threads thread-id :position] {:x new-x :y new-y})
+            (assoc-in [:comment-threads thread-id :frame-id] new-frame-id))))
+
+    ptk/WatchEvent
+    (watch [_ state _]
+      (let [thread-id (:id thread)
+            page-id (:current-page-id state)
+            objects (wsh/lookup-page-objects state page-id)
+            new-frame-id (if (nil? frame-id)
+                             (cph/frame-id-by-position objects {:x new-x :y new-y})
+                             (:frame-id thread))]
+        (->> (rp/mutation :update-comment-thread-position {:id thread-id :position {:x new-x :y new-y} :frame-id new-frame-id})
+             (rx/catch #(rx/throw {:type :update-comment-thread-position}))
+             (rx/ignore)))))))
+
+(defn move-frame-comment-threads
+  "Move comment threads that are inside a frame when that frame is moved"
+  [ids]
+  (us/verify (s/coll-of uuid?) ids)
+
+  (ptk/reify ::move-frame-comment-threads
+    ptk/WatchEvent
+    (watch [_ state _]
+      (let [objects (wsh/lookup-page-objects state)
+
+            is-frame? (fn [id] (= :frame (get-in objects [id :type])))
+            frame-ids? (into #{} (filter is-frame?) ids)
+
+            object-modifiers  (get state :workspace-modifiers)
+
+            build-move-event
+            (fn [comment-thread]
+              (let [frame (get objects (:frame-id comment-thread))
+                    frame' (-> (merge frame (get object-modifiers (:frame-id comment-thread)))
+                               (gsh/transform-shape))
+                    moved (gpt/to-vec (gpt/point (:x frame) (:y frame))
+                                      (gpt/point (:x frame') (:y frame')))
+                    new-x (+ (get-in comment-thread [:position :x]) (:x moved))
+                    new-y (+ (get-in comment-thread [:position :y]) (:y moved))]
+                (update-comment-thread-position comment-thread [new-x new-y] (:id frame))))]
+
+        (->> state
+             :comment-threads
+             (vals)
+             (filter (comp frame-ids? :frame-id))
+             (map build-move-event)
+             (rx/from))))))

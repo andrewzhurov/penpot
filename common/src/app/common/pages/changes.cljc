@@ -96,7 +96,7 @@
                   (when-not (= shape (get-in data [:pages-index page-id :objects id]))
                     ;; If object has change verify is correct
                     (us/verify! ::cts/shape shape))))))
-         [data (filter fn? effects)])))))
+         [data (filter some? effects)])))))
 
 (defn process-changes-ignoring-effects
   "The same as `process-change` but ignores the effects. Usefull when we

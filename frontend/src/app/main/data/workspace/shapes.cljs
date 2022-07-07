@@ -16,6 +16,7 @@
    [app.common.types.shape :as spec.shape]
    [app.common.types.shape.interactions :as csi]
    [app.common.uuid :as uuid]
+   [app.main.data.comments :as dc]
    [app.main.data.workspace.changes :as dch]
    [app.main.data.workspace.edition :as dwe]
    [app.main.data.workspace.selection :as dws]
@@ -239,7 +240,9 @@
                                                                    flows
                                                                    starting-flows)))))]
 
-        (rx/of (dch/commit-changes changes))))))
+        (rx/of
+         (dc/detach-comment-thread ids)
+         (dch/commit-changes changes))))))
 
 (defn- viewport-center
   [state]
