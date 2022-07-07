@@ -527,6 +527,10 @@ msgstr "Want to remove your account?"
 msgid "dashboard.remove-shared"
 msgstr "Remove as Shared Library"
 
+#: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
+msgid "dashboard.unpublish-shared"
+msgstr "Unpublish Library"
+
 #: src/app/main/ui/settings/profile.cljs
 msgid "dashboard.save-settings"
 msgstr "Save settings"

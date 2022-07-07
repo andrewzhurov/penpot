@@ -539,6 +539,10 @@ msgstr "¿Quieres borrar tu cuenta?"
 msgid "dashboard.remove-shared"
 msgstr "Eliminar como Biblioteca Compartida"
 
+#: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
+msgid "dashboard.unpublish-shared"
+msgstr "Eliminar Biblioteca"
+
 #: src/app/main/ui/settings/profile.cljs
 msgid "dashboard.save-settings"
 msgstr "Guardar opciones"

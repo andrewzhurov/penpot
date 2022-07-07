@@ -224,7 +224,7 @@
                        (when (or (seq current-projects) (seq other-teams))
                            [(tr "dashboard.move-to") nil sub-options "file-move-to"])
                        (if (:is-shared file)
-                         [(tr "dashboard.remove-shared") on-del-shared nil "file-del-shared"]
+                         [(tr "dashboard.unpublish-shared") on-del-shared nil "file-del-shared"]
                          [(tr "dashboard.add-shared") on-add-shared nil "file-add-shared"])
                        [(tr "dashboard.export-single") on-export-files nil "file-export"]
                        [:separator]
