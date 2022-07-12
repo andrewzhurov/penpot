@@ -15,6 +15,7 @@
    [app.main.data.comments :as dcm]
    [app.main.data.fonts :as df]
    [app.main.repo :as rp]
+   [app.main.ui.features :as features]
    [app.util.globals :as ug]
    [app.util.router :as rt]
    [beicon.core :as rx]
@@ -100,9 +101,15 @@
   (us/assert ::fetch-bundle-params params)
   (ptk/reify ::fetch-file
     ptk/WatchEvent
-    (watch [_ _ _]
-      (let [params' (cond-> {:file-id file-id}
-                      (uuid? share-id) (assoc :share-id share-id))]
+    (watch [_ state _]
+      (let [components-v2 (features/active-feature? state :components-v2)
+            params' (cond-> {:file-id file-id}
+                      (uuid? share-id)
+                      (assoc :share-id share-id)
+
+                      :always
+                      (assoc :components-v2 components-v2))]
+
         (->> (rp/query :view-only-bundle params')
              (rx/mapcat
               (fn [{:keys [fonts] :as bundle}]

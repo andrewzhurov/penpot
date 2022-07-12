@@ -21,6 +21,7 @@
    [app.main.data.workspace.thumbnails :as dwt]
    [app.main.repo :as rp]
    [app.main.store :as st]
+   [app.main.ui.features :as features]
    [app.util.http :as http]
    [app.util.router :as rt]
    [app.util.time :as dt]
@@ -261,8 +262,9 @@
   (ptk/reify ::fetch-bundle
     ptk/WatchEvent
     (watch [_ state _]
-      (let [share-id (-> state :viewer-local :share-id)]
-        (->> (rx/zip (rp/query :file-raw {:id file-id})
+      (let [share-id (-> state :viewer-local :share-id)
+            components-v2 (features/active-feature? state :components-v2)]
+        (->> (rx/zip (rp/query :file-raw {:id file-id :components-v2 components-v2})
                      (rp/query :team-users {:file-id file-id})
                      (rp/query :project {:id project-id})
                      (rp/query :file-libraries {:file-id file-id})

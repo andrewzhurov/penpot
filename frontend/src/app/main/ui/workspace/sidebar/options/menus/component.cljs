@@ -26,6 +26,7 @@
   (let [current-file-id (mf/use-ctx ctx/current-file-id)
         current-page-id (mf/use-ctx ctx/current-page-id)
         libraries       (mf/use-ctx ctx/libraries)
+        components-v2   (mf/use-ctx ctx/components-v2)
 
         id              (first ids)
         local           (mf/use-state {:menu-open false})
@@ -36,7 +37,9 @@
 
         component       (when (and component-id library-id)
                           (cph/get-component libraries library-id component-id))
-        main-instance?  (ctk/is-main-instance? id current-page-id component)
+        main-instance?  (if components-v2
+                          (ctk/is-main-instance? id current-page-id component)
+                          true)
 
         on-menu-click
         (mf/use-callback

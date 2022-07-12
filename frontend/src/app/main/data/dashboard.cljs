@@ -14,6 +14,7 @@
    [app.main.data.media :as di]
    [app.main.data.users :as du]
    [app.main.repo :as rp]
+   [app.main.ui.features :as features]
    [app.util.i18n :as i18n :refer [tr]]
    [app.util.router :as rt]
    [app.util.timers :as tm]
@@ -714,13 +715,14 @@
   (us/assert ::us/uuid project-id)
   (ptk/reify ::create-file
     ptk/WatchEvent
-    (watch [_ _ _]
+    (watch [_ state _]
       (let [{:keys [on-success on-error]
              :or {on-success identity
                   on-error rx/throw}} (meta params)
 
-            name   (name (gensym (str (tr "dashboard.new-file-prefix") " ")))
-            params (assoc params :name name)]
+            name          (name (gensym (str (tr "dashboard.new-file-prefix") " ")))
+            components-v2 (features/active-feature? state :components-v2)
+            params (assoc params :name name :components-v2 components-v2)]
 
         (->> (rp/mutation! :create-file params)
              (rx/tap on-success)

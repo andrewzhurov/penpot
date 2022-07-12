@@ -30,6 +30,7 @@
    [app.main.data.workspace.selection :as dws]
    [app.main.data.workspace.state-helpers :as wsh]
    [app.main.data.workspace.undo :as dwu]
+   [app.main.ui.features :as features]
    [app.main.refs :as refs]
    [app.main.repo :as rp]
    [app.main.store :as st]
@@ -357,8 +358,12 @@
             unames         (into #{} (map :name) all-components)
             new-name       (ctst/generate-unique-name unames (:name component))
 
-            main-instance-page  (wsh/lookup-page state (:main-instance-page component))
-            main-instance-shape (ctn/get-shape main-instance-page (:main-instance-id component))
+            components-v2  (features/active-feature? state :components-v2)
+
+            main-instance-page  (when components-v2
+                                  (wsh/lookup-page state (:main-instance-page component)))
+            main-instance-shape (when components-v2
+                                  (ctn/get-shape main-instance-page (:main-instance-id component)))
 
             [new-component-shape new-component-shapes
              new-main-instance-shape new-main-instance-shapes]
@@ -775,7 +780,6 @@
                     components-changed (reduce #(into %1 (ch/components-changed data %2))
                                                #{}
                                                changes)]
-                (js/console.log "components-changed" (clj->js components-changed))
                 (when (d/not-empty? components-changed)
                   (apply st/emit!
                          (map #(update-component-sync % (:id data))

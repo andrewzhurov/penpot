@@ -31,7 +31,7 @@
   ([file-id page-id props]
    (merge {:id file-id
            :name (get props :name "File1")
-           :data (ctf/make-file-data file-id page-id)}
+           :data (ctf/make-file-data file-id page-id true)}
           props)))
 
 (defn sample-shape

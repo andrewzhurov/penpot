@@ -15,6 +15,7 @@
    [app.main.store :as st]
    [app.main.ui.context :as ctx]
    [app.main.ui.hooks.resize :refer [use-resize-observer]]
+   [app.main.ui.features :as features]
    [app.main.ui.icons :as i]
    [app.main.ui.workspace.colorpalette :refer [colorpalette]]
    [app.main.ui.workspace.colorpicker]
@@ -122,6 +123,8 @@
         libraries     (mf/deref refs/workspace-libraries)
         local-library (mf/deref refs/workspace-local-library)
 
+        components-v2 (features/use-feature :components-v2)
+
         background-color (:background-color wglobal)]
 
     ;; Setting the layout preset by its name
@@ -151,23 +154,22 @@
         [:& (mf/provider ctx/libraries) {:value (assoc libraries
                                                        (:id local-library)
                                                        {:data local-library})}
-         [:section#workspace {:style {:background-color background-color}}
-          (when (not (:hide-ui layout))
-            [:& header {:file file
-                        :page-id page-id
-                        :project project
-                        :layout layout}])
+         [:& (mf/provider ctx/components-v2) {:value components-v2}
+          [:section#workspace {:style {:background-color background-color}}
+           (when (not (:hide-ui layout))
+             [:& header {:file file
+                         :page-id page-id
+                         :project project
+                         :layout layout}])
 
-          [:& context-menu]
+           [:& context-menu]
 
-          (if (and (and file project)
-                   (:initialized file))
-            [:& workspace-page {:key (dm/str "page-" page-id)
-                                :page-id page-id
-                                :file file
-                                :wglobal wglobal
-                                :layout layout}]
-            [:& workspace-loader])]]]]]]))
-
-
+           (if (and (and file project)
+                    (:initialized file))
+             [:& workspace-page {:key (dm/str "page-" page-id)
+                                 :page-id page-id
+                                 :file file
+                                 :wglobal wglobal
+                                 :layout layout}]
+             [:& workspace-loader])]]]]]]]))
 

@@ -104,8 +104,11 @@
         libraries      (mf/use-ctx ctx/libraries)
         component      (when (and (:component-id item) (:component-file item))
                          (cph/get-component libraries (:component-file item) (:component-id item)))
+        components-v2  (mf/use-ctx ctx/components-v2)
         main-instance? (when component
-                         (ctk/is-main-instance? (:id item) (:id page) component))
+                         (if components-v2
+                           (ctk/is-main-instance? (:id item) (:id page) component)
+                           true))
 
         expanded-iref (mf/use-memo
                        (mf/deps id)

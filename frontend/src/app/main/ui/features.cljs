@@ -15,7 +15,7 @@
 
 (log/set-level! :debug)
 
-(def features-list #{:auto-layout})
+(def features-list #{:auto-layout :components-v2})
 
 (defn toggle-feature
   [feature]
@@ -40,6 +40,11 @@
   [feature]
   (assert (contains? features-list feature) "Not supported feature")
   (st/emit! (toggle-feature feature)))
+
+(defn active-feature?
+  [state feature]
+  (assert (contains? features-list feature) "Not supported feature")
+  (contains? (get state :features) feature))
 
 (def features
   (l/derived :features st/state))

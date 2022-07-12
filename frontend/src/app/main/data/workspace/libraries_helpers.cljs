@@ -106,13 +106,14 @@
 
 
         [new-instance-shape new-instance-shapes]
-        (ctn/make-component-instance main-instance-page
-                                     {:id (:id new-component-shape)
-                                      :name (:name new-component-shape)
-                                      :objects (d/index-by :id new-component-shapes)}
-                                     (:component-file main-instance-shape)
-                                     position
-                                     false)]
+        (when (and (some? main-instance-page) (some? main-instance-shape))
+          (ctn/make-component-instance main-instance-page
+                                       {:id (:id new-component-shape)
+                                        :name (:name new-component-shape)
+                                        :objects (d/index-by :id new-component-shapes)}
+                                       (:component-file main-instance-shape)
+                                       position
+                                       false))]
 
     [new-component-shape new-component-shapes
      new-instance-shape new-instance-shapes]))
@@ -254,7 +255,6 @@
   (and (if (nil? component-id)
          (ctk/uses-library-components? shape library-id)
          (ctk/instance-of? shape library-id component-id))
-       (not (:main-instance? shape)) ; not need to sync the main instance (avoid infinite loop)
        (or (:component-root? shape) (not page?)))) ; avoid nested components inside pages
 
 (defmethod uses-assets? :colors

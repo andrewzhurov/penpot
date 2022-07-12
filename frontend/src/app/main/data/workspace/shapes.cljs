@@ -22,6 +22,7 @@
    [app.main.data.workspace.edition :as dwe]
    [app.main.data.workspace.selection :as dws]
    [app.main.data.workspace.state-helpers :as wsh]
+   [app.main.ui.features :as features]
    [app.main.streams :as ms]
    [beicon.core :as rx]
    [cljs.spec.alpha :as s]
@@ -146,6 +147,8 @@
 
             local-library {file-id {:data file}}
 
+            components-v2 (features/active-feature? state :components-v2)
+
             groups-to-unmask
             (reduce (fn [group-ids id]
                       ;; When the shape to delete is the mask of a masked group,
@@ -219,23 +222,25 @@
             (into (d/ordered-set) (find-all-empty-parents #{}))
 
             components-to-delete
-            (reduce (fn [components id]
-                      (let [shape (get objects id)
+            (if components-v2
+              (reduce (fn [components id]
+                        (let [shape (get objects id)
 
-                            component
-                            (when (and (:component-id shape) (:component-file shape))
-                              ;; Only local components may have main instances
-                              (cph/get-component local-library (:component-file shape) (:component-id shape)))
+                              component
+                              (when (and (:component-id shape) (:component-file shape))
+                                ;; Only local components may have main instances
+                                (cph/get-component local-library (:component-file shape) (:component-id shape)))
 
-                            main-instance?
-                            (when component
-                              (ctk/is-main-instance? (:id shape) (:id page) component))]
+                              main-instance?
+                              (when component
+                                (ctk/is-main-instance? (:id shape) (:id page) component))]
 
-                        (if main-instance?
-                          (conj components (:component-id shape))
-                          components)))
-                    []
-                    (into ids all-children))
+                          (if main-instance?
+                            (conj components (:component-id shape))
+                            components)))
+                      []
+                      (into ids all-children))
+              [])
 
             changes (-> (pcb/empty-changes it page-id)
                         (pcb/with-page page)

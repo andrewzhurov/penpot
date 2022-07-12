@@ -46,7 +46,7 @@
 (s/def ::is-shared ::us/boolean)
 (s/def ::create-file
   (s/keys :req-un [::profile-id ::name ::project-id]
-          :opt-un [::id ::is-shared]))
+          :opt-un [::id ::is-shared ::components-v2]))
 
 (sv/defmethod ::create-file
   [{:keys [pool] :as cfg} {:keys [profile-id project-id] :as params}]
@@ -66,11 +66,12 @@
 
 (defn create-file
   [conn {:keys [id name project-id is-shared data revn
-                modified-at deleted-at ignore-sync-until]
+                modified-at deleted-at ignore-sync-until
+                components-v2]
          :or {is-shared false revn 0}
          :as params}]
   (let [id   (or id (:id data) (uuid/next))
-        data (or data (ctf/make-file-data id))
+        data (or data (ctf/make-file-data id components-v2))
         file (db/insert! conn :file
                          (d/without-nils
                           {:id id
