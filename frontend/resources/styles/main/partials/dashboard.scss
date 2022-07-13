@@ -23,7 +23,7 @@
 }
 
 .dashboard-project-row {
-  margin-bottom: $size-4;
+  margin-bottom: $size-5;
 
   .project {
     align-items: center;
@@ -61,12 +61,21 @@
       color: $color-gray-30;
     }
 
+    .project-actions {
+      display: flex;
+      margin-left: $size-6;
+
+      .btn-small {
+        padding: $size-2;
+        margin: 0 $size-2;
+      }
+    }
+
     .pin-icon {
       cursor: pointer;
       display: flex;
       align-items: center;
-      margin-left: 40px;
-      margin-right: 10px;
+      margin-right: 14px;
       svg {
         width: 15px;
         height: 15px;

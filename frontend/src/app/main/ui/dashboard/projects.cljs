@@ -130,22 +130,22 @@
         (let [time (-> (:modified-at project)
                        (dt/timeago {:locale locale}))]
           [:span.recent-files-row-title-info (str ", " time)]))
+      [:div.project-actions
+       (when-not (:is-default project)
+         [:span.pin-icon.tooltip.tooltip-bottom
+          {:class (when (:is-pinned project) "active")
+           :on-click toggle-pin :alt (tr "dashboard.pin-unpin")}
+          (if (:is-pinned project)
+            i/pin-fill
+            i/pin)])
 
-      (when-not (:is-default project)
-        [:span.pin-icon.tooltip.tooltip-bottom
-         {:class (when (:is-pinned project) "active")
-          :on-click toggle-pin :alt (tr "dashboard.pin-unpin")}
-         (if (:is-pinned project)
-           i/pin-fill
-           i/pin)])
+       [:a.btn-secondary.btn-small.tooltip.tooltip-bottom
+        {:on-click create-file :alt (tr "dashboard.new-file") :data-test "project-new-file"}
+        i/close]
 
-      [:a.btn-secondary.btn-small.tooltip.tooltip-bottom
-       {:on-click create-file :alt (tr "dashboard.new-file") :data-test "project-new-file"}
-       i/close]
-
-      [:a.btn-secondary.btn-small.tooltip.tooltip-bottom
-       {:on-click on-menu-click :alt (tr "dashboard.options") :data-test "project-options"}
-       i/actions]]
+       [:a.btn-secondary.btn-small.tooltip.tooltip-bottom
+        {:on-click on-menu-click :alt (tr "dashboard.options") :data-test "project-options"}
+        i/actions]]]
 
      [:& line-grid
       {:project project
