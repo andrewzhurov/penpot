@@ -13,6 +13,10 @@
   overflow-y: auto;
   user-select: none;
 
+  &.no-bg {
+    background-color: transparent;
+  }
+
   &.search {
     margin-top: 10px;
   }
@@ -27,7 +31,6 @@
     border-radius: $br-small;
     display: flex;
     flex-direction: row;
-    margin-left: $size-4;
     margin-top: $size-4;
     padding: $size-1 $size-1 $size-1 $size-2;
     width: fit-content;
@@ -40,9 +43,9 @@
 
     h2 {
       cursor: pointer;
-      font-size: $fs14;
+      font-size: $fs18;
       line-height: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       color: $color-black;
       margin-right: $size-4;
     }
@@ -52,7 +55,7 @@
     }
 
     .info {
-      font-size: $fs14;
+      font-size: $fs16;
       line-height: 1rem;
       font-weight: unset;
       color: $color-gray-30;
@@ -80,7 +83,8 @@
 }
 
 .recent-files-row-title-info {
-  font-size: $fs14;
+  color: $color-gray-30;
+  font-size: $fs16;
 }
 
 .dashboard-table {

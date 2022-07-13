@@ -181,7 +181,7 @@
     (when (seq projects)
       [:*
        [:& header]
-       [:section.dashboard-container
+       [:section.dashboard-container.no-bg
         (for [{:keys [id] :as project} projects]
           (let [files (when recent-map
                         (->> (vals recent-map)

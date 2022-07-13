@@ -21,14 +21,12 @@
 
   .grid-item {
     align-items: center;
-    border: 2px solid lighten($color-gray-20, 13%);
-    border-radius: $br-small;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     height: 200px;
-    margin: $size-4;
+    margin: $size-2 $size-2 $size-4 $size-2;
     max-width: 260px;
     min-width: 260px;
     position: relative;
@@ -36,10 +34,14 @@
     width: 18%;
 
     &:hover {
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      .grid-item-th {
+        border: 2px solid $color-primary;
+      }
     }
 
     .grid-item-th {
+      border-radius: $br-small;
+      border: 2px solid lighten($color-gray-20, 10%);
       text-align: initial;
     }
 
@@ -94,6 +96,7 @@
     }
 
     .item-info {
+      color: $color-gray-30;
       display: flex;
       flex-direction: column;
       padding: $size-2;
@@ -103,7 +106,7 @@
       h3 {
         border: 1px solid transparent;
         color: $color-gray-60;
-        font-size: $fs14;
+        font-size: $fs16;
         font-weight: 400;
         overflow: hidden;
         padding: 0;
@@ -116,8 +119,8 @@
       }
 
       span.date {
-        color: $color-gray-20;
-        font-size: $fs12;
+        color: $color-gray-30;
+        font-size: $fs14;
         overflow: hidden;
         text-overflow: ellipsis;
         width: 100%;
@@ -181,7 +184,9 @@
       }
 
       &.selected {
-        border: 2px solid $color-primary;
+        .grid-item-th {
+          border: 2px solid $color-primary;
+        }
       }
 
       .project-th-actions {
