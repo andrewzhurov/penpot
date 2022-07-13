@@ -122,7 +122,7 @@
 
     [:*
      [:& header {:team team :project project}]
-     [:section.dashboard-container
+     [:section.dashboard-container.no-bg
       [:& grid {:project project
                 :files files}]]]))
 
