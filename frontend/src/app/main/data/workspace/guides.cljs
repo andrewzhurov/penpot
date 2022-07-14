@@ -33,6 +33,7 @@
             (-> (pcb/empty-changes it)
                 (pcb/with-page page)
                 (pcb/update-page-option :guides assoc (:id guide) guide))]
+        (println "xzxxxxx1111" (-> state :workspace-undo :transaction))
         (rx/of (dwc/commit-changes changes))))))
 
 (defn remove-guide [guide]

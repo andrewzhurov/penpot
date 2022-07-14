@@ -8,10 +8,12 @@
   (:require
    [app.common.geom.point :as gpt]
    [app.common.geom.shapes :as gsh]
+   [app.common.pages.changes-builder :as pcb]
    [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
    [app.main.data.comments :as dcm]
   ;;  [app.main.data.workspace :as dw]
+   [app.main.data.workspace.changes :as dwc]
    [app.main.data.workspace.common :as dwco]
    [app.main.data.workspace.drawing :as dwd]
    [app.main.data.workspace.state-helpers :as wsh]
@@ -116,29 +118,29 @@
   ([thread  [new-x new-y] frame-id]
   (us/assert ::dcm/comment-thread thread)
   (ptk/reify ::update-comment-thread-position
-    ptk/UpdateEvent
-    (update [_ state]
-      (let [thread-id (:id thread)
-            page-id (:current-page-id state)
-            objects (wsh/lookup-page-objects state page-id)
-            new-frame-id (if (nil? frame-id)
-                             (cph/frame-id-by-position objects {:x new-x :y new-y})
-                             (:frame-id thread))]
-        (-> state
-            (assoc-in [:workspace-data :pages-index page-id :comment-threads thread-id :position] {:x new-x :y new-y})
-            (assoc-in [:workspace-data :pages-index page-id :comment-threads thread-id :frame-id] new-frame-id))))
-
     ptk/WatchEvent
-    (watch [_ state _]
+    (watch [it state _]
       (let [thread-id (:id thread)
-            page-id (:current-page-id state)
+            page (wsh/lookup-page state)
+            page-id (:id page)
             objects (wsh/lookup-page-objects state page-id)
             new-frame-id (if (nil? frame-id)
-                             (cph/frame-id-by-position objects {:x new-x :y new-y})
-                             (:frame-id thread))]
-        (->> (rp/mutation :update-comment-thread-position {:id thread-id :position {:x new-x :y new-y} :frame-id new-frame-id})
-             (rx/catch #(rx/throw {:type :update-comment-thread-position}))
-             (rx/ignore)))))))
+                           (cph/frame-id-by-position objects {:x new-x :y new-y})
+                           (:frame-id thread))
+            thread (assoc thread
+                          :position {:x new-x :y new-y}
+                          :frame-id new-frame-id)
+            changes
+            (-> (pcb/empty-changes it)
+                (pcb/with-page page)
+                (pcb/update-page-option :comment-threads assoc thread-id thread))
+            _ (app.common.pprint/pprint changes)]
+
+        (rx/merge
+         (rx/of (dwc/commit-changes changes))
+         (->> (rp/mutation :update-comment-thread-position thread)
+              (rx/catch #(rx/throw {:type :update-comment-thread-position}))
+              (rx/ignore))))))))
 
 (defn move-frame-comment-threads
   "Move comment threads that are inside a frame when that frame is moved"
@@ -165,7 +167,8 @@
                     new-x (+ (get-in comment-thread [:position :x]) (:x moved))
                     new-y (+ (get-in comment-thread [:position :y]) (:y moved))]
                 (update-comment-thread-position comment-thread [new-x new-y] (:id frame))))]
-        (->> (get-in state [:workspace-data :pages-index page-id :comment-threads])
+        (->> (wsh/lookup-page-options state)
+             :comment-threads
              (vals)
              (filter (comp frame-ids? :frame-id))
              (map build-move-event)

@@ -23,7 +23,7 @@
         profile             (mf/deref refs/profile)
         users               (mf/deref refs/current-file-comments-users)
         local               (mf/deref refs/comments-local)
-        comment-threads-ref (l/derived (l/in [:workspace-data :pages-index page-id :comment-threads]) st/state)
+        comment-threads-ref (l/derived (l/in [:workspace-data :pages-index page-id :options :comment-threads]) st/state)
         threads-map         (mf/deref comment-threads-ref)
         threads             (->> (vals threads-map)
                                  (filter #(= (:page-id %) page-id))
