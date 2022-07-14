@@ -202,7 +202,7 @@
             (rx/of (dwu/start-undo-transaction))
             (rx/empty))
           (rx/of (dwg/move-frame-guides ids-with-children)
-                 (dwcm/move-frame-comment-threads ids-with-children)
+                 (dwcm/move-frame-comment-threads ids-with-children (:current-page-id state))
                  (dch/update-shapes
                   ids-with-children
                   (fn [shape]

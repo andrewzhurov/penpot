@@ -125,8 +125,8 @@
                              (cph/frame-id-by-position objects {:x new-x :y new-y})
                              (:frame-id thread))]
         (-> state
-            (assoc-in [:comment-threads thread-id :position] {:x new-x :y new-y})
-            (assoc-in [:comment-threads thread-id :frame-id] new-frame-id))))
+            (assoc-in [:workspace-data :pages-index page-id :comment-threads thread-id :position] {:x new-x :y new-y})
+            (assoc-in [:workspace-data :pages-index page-id :comment-threads thread-id :frame-id] new-frame-id))))
 
     ptk/WatchEvent
     (watch [_ state _]
@@ -142,7 +142,7 @@
 
 (defn move-frame-comment-threads
   "Move comment threads that are inside a frame when that frame is moved"
-  [ids]
+  [ids page-id]
   (us/verify (s/coll-of uuid?) ids)
 
   (ptk/reify ::move-frame-comment-threads
@@ -165,9 +165,7 @@
                     new-x (+ (get-in comment-thread [:position :x]) (:x moved))
                     new-y (+ (get-in comment-thread [:position :y]) (:y moved))]
                 (update-comment-thread-position comment-thread [new-x new-y] (:id frame))))]
-
-        (->> state
-             :comment-threads
+        (->> (get-in state [:workspace-data :pages-index page-id :comment-threads])
              (vals)
              (filter (comp frame-ids? :frame-id))
              (map build-move-event)

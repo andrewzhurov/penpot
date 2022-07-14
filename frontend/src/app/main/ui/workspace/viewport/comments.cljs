@@ -12,21 +12,22 @@
    [app.main.store :as st]
    [app.main.ui.comments :as cmt]
    [cuerdas.core :as str]
+   [okulary.core :as l]
    [rumext.alpha :as mf]))
 
 (mf/defc comments-layer
   [{:keys [vbox vport zoom file-id page-id drawing] :as props}]
-  (let [pos-x       (* (- (:x vbox)) zoom)
-        pos-y       (* (- (:y vbox)) zoom)
+  (let [pos-x               (* (- (:x vbox)) zoom)
+        pos-y               (* (- (:y vbox)) zoom)
 
-        profile     (mf/deref refs/profile)
-        users       (mf/deref refs/current-file-comments-users)
-        local       (mf/deref refs/comments-local)
-        threads-map (mf/deref refs/threads-ref)
-
-        threads     (->> (vals threads-map)
-                         (filter #(= (:page-id %) page-id))
-                         (dcm/apply-filters local profile))
+        profile             (mf/deref refs/profile)
+        users               (mf/deref refs/current-file-comments-users)
+        local               (mf/deref refs/comments-local)
+        comment-threads-ref (l/derived (l/in [:workspace-data :pages-index page-id :comment-threads]) st/state)
+        threads-map         (mf/deref comment-threads-ref)
+        threads             (->> (vals threads-map)
+                                 (filter #(= (:page-id %) page-id))
+                                 (dcm/apply-filters local profile))
 
         on-draft-cancel
         (mf/use-callback
