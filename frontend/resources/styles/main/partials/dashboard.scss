@@ -62,7 +62,7 @@
     }
 
     .project-actions {
-      display: flex;
+      display: none;
       margin-left: $size-6;
 
       .btn-small {
@@ -87,6 +87,11 @@
           fill: $color-gray-50;
         }
       }
+    }
+  }
+  &:hover {
+    .project-actions{
+      display:flex;
     }
   }
 }
