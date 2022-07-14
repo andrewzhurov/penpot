@@ -31,6 +31,8 @@
 - Support for import/export binary format [Taiga #2991](https://tree.taiga.io/project/penpot/us/2991)
 
 ### :bug: Bugs fixed
+- Fix Drag and drop font assets in groups
+
 ### :arrow_up: Deps updates
 ### :heart: Community contributions by (Thank you!)
 
