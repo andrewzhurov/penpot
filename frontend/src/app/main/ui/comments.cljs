@@ -332,18 +332,6 @@
                              :new-position-y nil
                              :new-frame-id frame-id})
 
-        on-pointer-enter
-        (mf/use-callback
-         (fn []
-          ;;  (st/emit! (dw/set-hover-guide id true))
-           (swap! state assoc :hover true)))
-
-        on-pointer-leave
-        (mf/use-callback
-         (fn []
-          ;;  (st/emit! (dw/set-hover-guide id false))
-           (swap! state assoc :hover false)))
-
         on-pointer-down
         (mf/use-callback
          (fn [event]
@@ -382,9 +370,7 @@
                       :new-position-x (+ (:x position) delta-x)
                       :new-position-y (+ (:y position) delta-y))))))]
 
-    {:on-pointer-enter on-pointer-enter
-     :on-pointer-leave on-pointer-leave
-     :on-pointer-down on-pointer-down
+    {:on-pointer-down on-pointer-down
      :on-pointer-up on-pointer-up
      :on-mouse-move on-mouse-move
      :on-lost-pointer-capture on-lost-pointer-capture
@@ -397,9 +383,7 @@
         drag? (mf/use-ref nil)
         was-open? (mf/use-ref nil)
 
-        {:keys [on-pointer-enter
-                on-pointer-leave
-                on-pointer-down
+        {:keys [on-pointer-down
                 on-pointer-up
                 on-mouse-move
                 state
@@ -433,8 +417,6 @@
       :on-pointer-down on-pointer-down*
       :on-pointer-up on-pointer-up*
       :on-mouse-move on-mouse-move*
-      :on-pointer-enter on-pointer-enter
-      :on-pointer-leave on-pointer-leave
       :on-lost-pointer-capture on-lost-pointer-capture
       :class (dom/classnames
               :resolved (:is-resolved thread)
