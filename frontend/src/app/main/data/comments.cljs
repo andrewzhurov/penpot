@@ -201,7 +201,11 @@
   [file-id]
   (us/assert ::us/uuid file-id)
   (letfn [(fetched [data state]
-            (assoc state :comment-threads (d/index-by :id data)))]
+                   #_(assoc state :comment-threads (d/index-by :id data))
+                   (letfn [(set-comment-threds [st comment-thread]
+                             (let [frame (wsh/lookup-component-objects st (:id comment-thread))]
+                               (assoc-in state [:workspace-data :pages-index (:page-id comment-thread) :comment-threads (:id comment-thread)] comment-thread)))]
+                     (reduce set-comment-threds state data)))]
     (ptk/reify ::retrieve-comment-threads
       ptk/WatchEvent
       (watch [_ state _]

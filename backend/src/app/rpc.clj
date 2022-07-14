@@ -243,7 +243,6 @@
     (->> (sv/scan-ns 'app.rpc.commands.binfile
                      'app.rpc.commands.auth
                      'app.rpc.commands.ldap
-                     'app.rpc.commands.comments
                      'app.rpc.commands.demo)
          (map (partial process-method cfg))
          (into {}))))
