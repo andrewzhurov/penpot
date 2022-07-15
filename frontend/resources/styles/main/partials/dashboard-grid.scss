@@ -26,9 +26,8 @@
     flex-direction: column;
     flex-shrink: 0;
     height: 200px;
-    margin: $size-3 $size-2 $size-4 $size-2;
-    max-width: 260px;
-    min-width: 260px;
+    margin: $size-3 $size-3 $size-4 $size-3;
+    max-width: 240px;
     position: relative;
     text-align: center;
     width: 18%;
@@ -43,7 +42,7 @@
       border-radius: $br-small;
       border: 2px solid lighten($color-gray-20, 10%);
       text-align: initial;
-      max-width: 250px;
+      max-width: 240px;
     }
 
     &.placeholder {

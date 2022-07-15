@@ -44,18 +44,25 @@
       min-height: 32px;
     }
     .show-more {
-      display: flex;
-      justify-content: space-between;
       align-items: center;
       color: $color-gray-30;
+      display: flex;
+      font-size: $fs14;
+      justify-content: space-between;
       cursor: pointer;
       .placeholder-icon {
         transform: rotate(-90deg);
         margin-left: 10px;
         svg {
-          height: 15px;
-          width: 15px;
+          height: 14px;
+          width: 14px;
           fill: $color-gray-30
+        }
+      }
+      &:hover {
+        color: $color-primary-dark;
+        svg {
+          fill: $color-primary-dark;
         }
       }
     }
