@@ -32,12 +32,10 @@
     min-width: 260px;
     position: relative;
     text-align: center;
-    width: 20%;
-    @media bp-tablet {
+    @media #{$bp-max-desktop} {
       height: 200px;
       max-width: 240px;
       min-width: 230px;
-      width: 16%;
     }
 
     &:hover {

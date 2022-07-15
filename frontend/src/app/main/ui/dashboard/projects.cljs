@@ -57,12 +57,14 @@
 
         width            (mf/use-state nil)
         rowref           (mf/use-ref)
-        itemsize       280
+        itemsize       (if (>= @width 1030)
+                         280
+                         230)
+        
         ratio          (if (some? @width) (/ @width itemsize) 0)
         nitems         (mth/floor ratio)
         limit          (min 10 nitems)
         limit          (max 1 limit)
-        
         toggle-pin
         (mf/use-callback
          (mf/deps project)
