@@ -148,7 +148,8 @@
                                   :zoom zoom
                                   :on-click on-bubble-click
                                   :open? (= (:id item) (:open cstate))
-                                  :key (:seqn item)}]))
+                                  :key (:seqn item)
+                                  :origin :viewer}]))
 
        (when-let [id (:open cstate)]
          (when-let [thread (as-> (get threads-map id) $

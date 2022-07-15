@@ -378,7 +378,7 @@
 
 (mf/defc thread-bubble
   {::mf/wrap [mf/memo]}
-  [{:keys [thread zoom open?]}]
+  [{:keys [thread zoom open? on-click origin]}]
   (let [pos   (:position thread)
         drag? (mf/use-ref nil)
         was-open? (mf/use-ref nil)
@@ -389,27 +389,36 @@
                 state
                 on-lost-pointer-capture]} (use-buble zoom thread)
 
-        pos-x (* (or (:new-position-x @state)(:x pos)) zoom)
-        pos-y (* (or (:new-position-y @state)(:y pos)) zoom)
+        pos-x (* (or (:new-position-x @state) (:x pos)) zoom)
+        pos-y (* (or (:new-position-y @state) (:y pos)) zoom)
 
         on-pointer-down* (fn [event]
-                           (mf/set-ref-val! was-open? open?)
-                           (when open? (st/emit! (dcm/close-thread)))
-                           (mf/set-ref-val! drag? false)
-                           (dom/stop-propagation event)
-                           (on-pointer-down event))
+                           (when (not= origin :viewer)
+                             (mf/set-ref-val! was-open? open?)
+                             (when open? (st/emit! (dcm/close-thread)))
+                             (mf/set-ref-val! drag? false)
+                             (dom/stop-propagation event)
+                             (on-pointer-down event)))
 
         on-pointer-up* (fn [event]
-                         (dom/stop-propagation event)
-                         (on-pointer-up event thread)
+                         (when (not= origin :viewer)
+                           (dom/stop-propagation event)
+                           (on-pointer-up event thread)
 
-                         (when (or (and (mf/ref-val was-open?) (mf/ref-val drag?))
-                                   (and (not (mf/ref-val was-open?)) (not (mf/ref-val drag?))))
-                           (st/emit! (dcm/open-thread thread))))
+                           (when (or (and (mf/ref-val was-open?) (mf/ref-val drag?))
+                                     (and (not (mf/ref-val was-open?)) (not (mf/ref-val drag?))))
+                             (st/emit! (dcm/open-thread thread)))))
         on-mouse-move* (fn [event]
-                         (mf/set-ref-val! drag? true)
-                         (dom/stop-propagation event)
-                         (on-mouse-move event))]
+                         (when (not= origin :viewer)
+                           (mf/set-ref-val! drag? true)
+                           (dom/stop-propagation event)
+                           (on-mouse-move event)))
+
+
+        on-click* (fn [event]
+                    (dom/stop-propagation event)
+                    (when (= origin :viewer)
+                      (on-click thread)))]
 
     [:div.thread-bubble
      {:style {:top (str pos-y "px")
@@ -417,6 +426,7 @@
       :on-pointer-down on-pointer-down*
       :on-pointer-up on-pointer-up*
       :on-mouse-move on-mouse-move*
+      :on-click on-click*
       :on-lost-pointer-capture on-lost-pointer-capture
       :class (dom/classnames
               :resolved (:is-resolved thread)
