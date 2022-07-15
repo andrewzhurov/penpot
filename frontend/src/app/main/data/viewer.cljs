@@ -116,6 +116,7 @@
                    (map (fn [page-id]
                           (let [data (get-in file [:data :pages-index page-id])]
                             [page-id (assoc data
+                                            :comment-threads-position (get-in file [:options :comment-threads-position])
                                             :frames (cph/get-viewer-frames (:objects data))
                                             :all-frames (cph/get-viewer-frames (:objects data) {:all-frames? true}))])))
                    (into {}))]

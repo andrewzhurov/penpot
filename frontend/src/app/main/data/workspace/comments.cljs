@@ -167,9 +167,7 @@
                                (gsh/transform-shape))
                     moved (gpt/to-vec (gpt/point (:x frame) (:y frame))
                                       (gpt/point (:x frame') (:y frame')))
-                    _ (print "move-frame-comment-threads1" (:position comment-thread))
                     position (get-in threads-position-map [(:id comment-thread) :position])
-                    _ (print "move-frame-comment-threads2" position)
                     new-x (+ (:x position) (:x moved))
                     new-y (+ (:y position) (:y moved))]
                 (update-comment-thread-position comment-thread [new-x new-y] (:id frame))))]

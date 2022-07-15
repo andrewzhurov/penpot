@@ -203,7 +203,13 @@
   (us/assert ::us/uuid file-id)
   (letfn [(fetched [data state]
                    (let [set-comment-threds (fn set-comment-threds [st comment-thread]
-                                                                (assoc-in st [:workspace-data :pages-index (:page-id comment-thread) :options :comment-threads-position (:id comment-thread)] (select-keys comment-thread [:position :frame-id])))
+                                              (let [thread-position (get-in state [:workspace-data :pages-index (:page-id comment-thread) :options :comment-threads-position (:id comment-thread)])
+                                                    path [:workspace-data :pages-index (:page-id comment-thread) :options :comment-threads-position (:id comment-thread)]]
+                                                (cond-> st
+                                                  (nil? (get-in st path))
+                                                  (->
+                                                   (assoc-in (conj path :position) (:position comment-thread))
+                                                   (assoc-in (conj path :frame-id) (:frame-id comment-thread))))))
                          state (assoc state :comment-threads (d/index-by :id data))]
                      (reduce set-comment-threds state data)))]
     (ptk/reify ::retrieve-comment-threads

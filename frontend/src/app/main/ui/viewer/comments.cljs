@@ -85,6 +85,8 @@
 (mf/defc comments-layer
   [{:keys [zoom file users frame page] :as props}]
   (let [profile     (mf/deref refs/profile)
+        threads-position-ref  (l/derived (l/in [:viewer :pages (:id page) :options :comment-threads-position]) st/state)
+        threads-position-map  (mf/deref threads-position-ref)
         threads-map (mf/deref threads-ref)
 
         frame-corner (-> frame :points gsh/points->selrect gpt/point)
@@ -97,6 +99,7 @@
         cstate      (mf/deref refs/comments-local)
 
         threads     (->> (vals threads-map)
+                         (mapv #(assoc % :position (get-in threads-position-map [(:id %) :position])))
                          (dcm/apply-filters cstate profile)
                          (filter (fn [{:keys [position]}]
                                    (gsh/has-point? frame position))))
