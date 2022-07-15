@@ -132,6 +132,9 @@
             thread (assoc thread
                           :position {:x new-x :y new-y}
                           :frame-id new-frame-id)
+
+            _ (println "TO" :position {:x new-x :y new-y} :frame-id new-frame-id)
+
             changes
             (-> (pcb/empty-changes it)
                 (pcb/with-page page)
@@ -174,7 +177,9 @@
 
         (->> (:comment-threads state)
              (vals)
-             (filter (comp frame-ids? :frame-id))
+             ;; TODO: improve this map
              (mapv #(assoc % :position (get-in threads-position-map [(:id %) :position])))
+             (mapv #(assoc % :frame-id (get-in threads-position-map [(:id %) :frame-id])))
+             (filter (comp frame-ids? :frame-id))             
              (map build-move-event)
              (rx/from))))))

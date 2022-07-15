@@ -29,6 +29,7 @@
         threads               (->> (vals threads-map)
                                    (filter #(= (:page-id %) page-id))
                                    (mapv #(assoc % :position (get-in threads-position-map [(:id %) :position])))
+                                   (mapv #(assoc % :frame-id (get-in threads-position-map [(:id %) :frame-id])))
                                    (dcm/apply-filters local profile))
 
         on-draft-cancel
