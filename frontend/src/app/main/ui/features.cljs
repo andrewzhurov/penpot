@@ -42,9 +42,11 @@
   (st/emit! (toggle-feature feature)))
 
 (defn active-feature?
-  [state feature]
-  (assert (contains? features-list feature) "Not supported feature")
-  (contains? (get state :features) feature))
+  ([feature]
+   (active-feature? @st/state feature))
+  ([state feature]
+   (assert (contains? features-list feature) "Not supported feature")
+   (contains? (get state :features) feature)))
 
 (def features
   (l/derived :features st/state))

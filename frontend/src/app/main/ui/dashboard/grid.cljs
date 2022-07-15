@@ -18,6 +18,7 @@
    [app.main.ui.dashboard.inline-edition :refer [inline-edition]]
    [app.main.ui.dashboard.placeholder :refer [empty-placeholder loading-placeholder]]
    [app.main.ui.icons :as i]
+   [app.main.ui.features :as features]
    [app.main.worker :as wrk]
    [app.util.dom :as dom]
    [app.util.dom.dnd :as dnd]
@@ -42,9 +43,11 @@
   (mf/use-fn
    (mf/deps (:id file) (:revn file))
    (fn []
-     (wrk/ask! {:cmd :thumbnails/generate
-                :revn (:revn file)
-                :file-id (:id file)}))))
+     (let [components-v2 (features/active-feature? :components-v2)]
+       (wrk/ask! {:cmd :thumbnails/generate
+                  :revn (:revn file)
+                  :file-id (:id file)
+                  :components-v2 components-v2})))))
 
 (mf/defc grid-item-thumbnail
   {::mf/wrap [mf/memo]}

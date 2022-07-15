@@ -39,6 +39,7 @@
 (s/def ::profile-id ::us/uuid)
 (s/def ::team-id ::us/uuid)
 (s/def ::search-term ::us/string)
+(s/def ::components-v2 ::us/boolean)
 
 ;; --- Query: File Permissions
 
@@ -227,13 +228,17 @@
 
 (defn retrieve-file
   [{:keys [pool] :as cfg} id components-v2]
-  (cond->
-    (->> (db/get-by-id pool :file id)
-         (decode-row)
-         (pmg/migrate-file))
+  (let [file (->> (db/get-by-id pool :file id)
+                  (decode-row)
+                  (pmg/migrate-file))]
 
-    components-v2
-    (ctf/migrate-to-components-v2)))
+    (if components-v2
+      (update file :data ctf/migrate-to-components-v2)
+      (if (get-in file [:data :options :components-v2])
+        (ex/raise :type :restriction
+                  :code :feature-disabled
+                  :hint "tried to open a components-v2 file with feature disabled")
+        file))))
 
 (s/def ::file
   (s/keys :req-un [::profile-id ::id]
@@ -378,14 +383,15 @@
         (update :objects assoc-thumbnails page-id thumbs)))))
 
 (s/def ::file-data-for-thumbnail
-  (s/keys :req-un [::profile-id ::file-id]))
+  (s/keys :req-un [::profile-id ::file-id]
+          :opt-in [::components-v2]))
 
 (sv/defmethod ::file-data-for-thumbnail
   "Retrieves the data for generate the thumbnail of the file. Used
   mainly for render thumbnails on dashboard."
-  [{:keys [pool] :as cfg} {:keys [profile-id file-id] :as props}]
+  [{:keys [pool] :as cfg} {:keys [profile-id file-id components-v2] :as props}]
   (check-read-permissions! pool profile-id file-id)
-  (let [file (retrieve-file cfg file-id false)]
+  (let [file (retrieve-file cfg file-id components-v2)]
     {:file-id file-id
      :revn (:revn file)
      :page (get-file-thumbnail-data cfg file)}))

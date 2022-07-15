@@ -32,7 +32,8 @@
                   :project-id proj-id
                   :id file-id
                   :name "foobar"
-                  :is-shared false}
+                  :is-shared false
+                  :components-v2 true}
             out (th/mutation! data)]
 
         ;; (th/print-result! out)
@@ -246,7 +247,8 @@
                   :profile-id (:id profile2)
                   :project-id (:default-project-id profile1)
                   :name "foobar"
-                  :is-shared false}
+                  :is-shared false
+                  :components-v2 true}
         out      (th/mutation! data)
         error    (:error out)]
 
@@ -537,7 +539,8 @@
       ;; Check the result
       (let [data {::th/type :file-data-for-thumbnail
                   :profile-id (:id prof)
-                  :file-id (:id file)}
+                  :file-id (:id file)
+                  :components-v2 true}
             {:keys [error result] :as out} (th/query! data)]
         ;; (th/print-result! out)
         (t/is (map? result))
@@ -562,7 +565,8 @@
       ;; Check the result
       (let [data {::th/type :file-data-for-thumbnail
                   :profile-id (:id prof)
-                  :file-id (:id file)}
+                  :file-id (:id file)
+                  :components-v2 true}
             {:keys [error result] :as out} (th/query! data)]
         ;; (th/print-result! out)
         (t/is (map? result))

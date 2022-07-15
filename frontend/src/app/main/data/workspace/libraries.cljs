@@ -758,7 +758,9 @@
   (ptk/reify ::watch-component-changes
     ptk/WatchEvent
     (watch [_ _ stream]
-      (let [stopper
+      (let [components-v2 (features/active-feature? :components-v2)
+
+            stopper
             (->> stream
                  (rx/filter #(or (= :app.main.data.workspace/finalize-page (ptk/type %))
                                  (= ::watch-component-changes (ptk/type %)))))
@@ -785,10 +787,11 @@
                          (map #(update-component-sync % (:id data))
                               components-changed)))))]
 
-        (->> change-str
-             (rx/with-latest-from workspace-data-str)
-             (rx/map check-changes)
-             (rx/take-until stopper))))))
+        (when components-v2
+          (->> change-str
+               (rx/with-latest-from workspace-data-str)
+               (rx/map check-changes)
+               (rx/take-until stopper)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Backend interactions

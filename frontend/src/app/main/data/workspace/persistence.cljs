@@ -125,8 +125,7 @@
               (rx/map persist-synchronous-changes)
               (rx/take-until (rx/delay 100 stoper))
               (rx/finalize (fn []
-                             (log/debug :hint "finalize persistence: synchronous save loop"))))
-         )))))
+                             (log/debug :hint "finalize persistence: synchronous save loop")))))))))
 
 (defn persist-changes
   [file-id changes]
@@ -135,12 +134,14 @@
   (ptk/reify ::persist-changes
     ptk/WatchEvent
     (watch [_ state _]
-      (let [sid     (:session-id state)
-            file    (get state :workspace-file)
-            params  {:id (:id file)
-                     :revn (:revn file)
-                     :session-id sid
-                     :changes-with-metadata (into [] changes)}]
+      (let [components-v2 (features/active-feature? state :components-v2)
+            sid           (:session-id state)
+            file          (get state :workspace-file)
+            params        {:id (:id file)
+                           :revn (:revn file)
+                           :session-id sid
+                           :changes-with-metadata (into [] changes)
+                           :components-v2 components-v2}]
 
         (when (= file-id (:id params))
           (->> (rp/mutation :update-file params)
@@ -176,13 +177,15 @@
   (ptk/reify ::persist-synchronous-changes
     ptk/WatchEvent
     (watch [_ state _]
-      (let [sid     (:session-id state)
+      (let [components-v2 (features/active-feature? state :components-v2)
+            sid     (:session-id state)
             file    (get-in state [:workspace-libraries file-id])
 
             params  {:id (:id file)
                      :revn (:revn file)
                      :session-id sid
-                     :changes changes}]
+                     :changes changes
+                     :components-v2 components-v2}]
 
         (when (:id params)
           (->> (rp/mutation :update-file params)
