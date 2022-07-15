@@ -83,7 +83,7 @@
        [:div.modal-close-button
         {:on-click cancel-fn} i/close]]
 
-      [:div.modal-content
+      [:div.modal-content.delete-shared
        (when (and (string? message) (not= message ""))
          [:h3 message])
 
