@@ -70,7 +70,8 @@
   (us/assert ::create-thread-params params)
   (letfn [(created [{:keys [id comment page-id] :as thread} state]
             (-> state
-                (update-in [:workspace-data :pages-index page-id :options :comment-threads] assoc id (dissoc thread :comment))
+                (update :comment-threads assoc id (dissoc thread :comment))
+                (update-in [:workspace-data :pages-index page-id :options :comment-threads-position] assoc id (select-keys thread [:position :frame-id]))
                 (update :comments-local assoc :open id)
                 (update :comments-local dissoc :draft)
                 (update :workspace-drawing dissoc :comment)
@@ -201,8 +202,9 @@
   [file-id]
   (us/assert ::us/uuid file-id)
   (letfn [(fetched [data state]
-                   (letfn [(set-comment-threds [st comment-thread]
-                                               (assoc-in st [:workspace-data :pages-index (:page-id comment-thread) :options :comment-threads (:id comment-thread)] comment-thread))]
+                   (let [set-comment-threds (fn set-comment-threds [st comment-thread]
+                                                                (assoc-in st [:workspace-data :pages-index (:page-id comment-thread) :options :comment-threads-position (:id comment-thread)] (select-keys comment-thread [:position :frame-id])))
+                         state (assoc state :comment-threads (d/index-by :id data))]
                      (reduce set-comment-threds state data)))]
     (ptk/reify ::retrieve-comment-threads
       ptk/WatchEvent

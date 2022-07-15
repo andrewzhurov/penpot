@@ -17,17 +17,19 @@
 
 (mf/defc comments-layer
   [{:keys [vbox vport zoom file-id page-id drawing] :as props}]
-  (let [pos-x               (* (- (:x vbox)) zoom)
-        pos-y               (* (- (:y vbox)) zoom)
+  (let [pos-x                (* (- (:x vbox)) zoom)
+        pos-y                (* (- (:y vbox)) zoom)
 
-        profile             (mf/deref refs/profile)
-        users               (mf/deref refs/current-file-comments-users)
-        local               (mf/deref refs/comments-local)
-        comment-threads-ref (l/derived (l/in [:workspace-data :pages-index page-id :options :comment-threads]) st/state)
-        threads-map         (mf/deref comment-threads-ref)
-        threads             (->> (vals threads-map)
-                                 (filter #(= (:page-id %) page-id))
-                                 (dcm/apply-filters local profile))
+        profile               (mf/deref refs/profile)
+        users                 (mf/deref refs/current-file-comments-users)
+        local                 (mf/deref refs/comments-local)
+        threads-position-ref  (l/derived (l/in [:workspace-data :pages-index page-id :options :comment-threads-position]) st/state)
+        threads-position-map  (mf/deref threads-position-ref)
+        threads-map           (mf/deref refs/threads-ref)
+        threads               (->> (vals threads-map)
+                                   (filter #(= (:page-id %) page-id))
+                                   (mapv #(assoc % :position (get-in threads-position-map [(:id %) :position])))
+                                   (dcm/apply-filters local profile))
 
         on-draft-cancel
         (mf/use-callback
