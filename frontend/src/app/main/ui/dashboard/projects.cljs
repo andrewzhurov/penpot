@@ -57,7 +57,7 @@
 
         width            (mf/use-state nil)
         rowref           (mf/use-ref)
-        itemsize       290
+        itemsize       280
         ratio          (if (some? @width) (/ @width itemsize) 0)
         nitems         (mth/floor ratio)
         limit          (min 10 nitems)

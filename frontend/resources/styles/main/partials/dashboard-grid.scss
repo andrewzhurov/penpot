@@ -7,6 +7,7 @@
 .dashboard-grid {
   font-size: $fs14;
   height: 100%;
+  overflow: hidden;
 
   .grid-row {
     display: flex;
@@ -25,12 +26,19 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    height: 200px;
+    height: 240px;
     margin: $size-3 $size-3 $size-4 $size-3;
-    max-width: 240px;
+    max-width: 290px;
+    min-width: 260px;
     position: relative;
     text-align: center;
-    width: 18%;
+    width: 20%;
+    @media bp-tablet {
+      height: 200px;
+      max-width: 240px;
+      min-width: 230px;
+      width: 16%;
+    }
 
     &:hover {
       .grid-item-th {
@@ -40,9 +48,8 @@
 
     .grid-item-th {
       border-radius: $br-small;
-      border: 2px solid lighten($color-gray-20, 10%);
+      border: 2px solid lighten($color-gray-20, 15%);
       text-align: initial;
-      max-width: 240px;
     }
 
     &.placeholder {
