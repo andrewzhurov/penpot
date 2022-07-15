@@ -541,7 +541,7 @@ msgstr "Eliminar como Biblioteca Compartida"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "dashboard.unpublish-shared"
-msgstr "Eliminar Biblioteca"
+msgstr "Despublicar Biblioteca"
 
 #: src/app/main/ui/settings/profile.cljs
 msgid "dashboard.save-settings"
@@ -1823,11 +1823,11 @@ msgstr "Añadir “%s” como Biblioteca Compartida"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.unpublish-shared-confirm.title"
-msgstr "Dejar de compartir biblioteca"
+msgstr "Despublicar biblioteca"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.unpublish-shared-confirm.message"
-msgstr "¿Seguro que quieres dejar de compartir esta biblioteca?"
+msgstr "¿Seguro que quieres despublicar esta biblioteca?"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.unpublish-shared-confirm.scd-message"
@@ -1838,12 +1838,12 @@ msgstr[1] "Está siendo usada en estos archivos:"
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.unpublish-shared-confirm.hint"
 msgid_plural "modals.unpublish-shared-confirm.hint"
-msgstr[0] "Si lo dejas de compartir, los elementos pasarán a formar parte de la biblioteca del archivo."
-msgstr[1] "Si lo dejas de compartir, los elementos pasarán a formar parte de la biblioteca de los archivos."
+msgstr[0] "Si la despublicas, los elementos pasarán a formar parte de la biblioteca del archivo."
+msgstr[1] "Si la despublicas, los elementos pasarán a formar parte de la biblioteca de los archivos."
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.unpublish-shared-confirm.accept"
-msgstr "Dejar de compartir"
+msgstr "Despublicar"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.delete-shared-confirm.title"
@@ -1856,8 +1856,8 @@ msgstr "¿Seguro que quieres borrar este archivo?"
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.delete-shared-confirm.scd-message"
 msgid_plural "modals.delete-shared-confirm.scd-message"
-msgstr[0] "El archivo que quieres borrar contiene una librería que está siendo usada en este archivo:"
-msgstr[1] "El archivo que quieres borrar contiene una librería que está siendo usada en estos archivos:"
+msgstr[0] "El archivo que quieres borrar tiene una librería que se está usando en este archivo:"
+msgstr[1] "El archivo que quieres borrar tiene una librería que se está usando en estos archivos:"
 
 #: src/app/main/ui/workspace/header.cljs, src/app/main/ui/dashboard/file_menu.cljs
 msgid "modals.delete-shared-confirm.accept"

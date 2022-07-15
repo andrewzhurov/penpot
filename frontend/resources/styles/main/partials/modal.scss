@@ -129,13 +129,16 @@
     flex-direction: column;
     padding: 32px;
     border-top: 1px solid $color-gray-10;
-    &.delete-shared {
-      padding: 15px 32px;
-    }
     h3 {
       color: $color-gray-40;
       font-size: $fs16;
       font-weight: 400;
+    }
+    &.delete-shared {
+      padding: 15px 32px;
+      .modal-item-element {
+        font-size: $fs16;
+      }
     }
   }
 

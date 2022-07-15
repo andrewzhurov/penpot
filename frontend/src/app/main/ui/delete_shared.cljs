@@ -98,7 +98,7 @@
                {:key id}
                [:span "- " (:name file)]])]]
           (when (and (string? hint) (not= hint ""))
-            [:p hint])])]
+            [:h3 hint])])]
 
       [:div.modal-footer
        [:div.action-buttons
